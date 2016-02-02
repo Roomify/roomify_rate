@@ -1,0 +1,13 @@
+name = Roomify Rate
+description = Provides multiple rate functionality
+core = 7.x
+
+package = Roomify
+
+dependencies[] = bat_event
+
+files[] = roomify_rate.admin.inc
+files[] = roomify_rate_type.admin.inc
+files[] = views/roomify_rate.views.inc
+files[] = views/roomify_rate_handler_delete_link_field.inc
+files[] = views/roomify_rate_handler_edit_link_field.inc
