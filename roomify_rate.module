@@ -481,7 +481,7 @@ function roomify_rate_add_minimum_stay_field($type_bundle) {
       'field_name' => 'rate_minimum_stay',
       'type' => 'number_integer',
       'cardinality' => 1,
-      // 'locked' => 1,
+      'locked' => 1,
     );
     field_create_field($field);
   }
@@ -523,7 +523,7 @@ function roomify_rate_add_maximum_stay_field($type_bundle) {
       'field_name' => 'rate_maximum_stay',
       'type' => 'number_integer',
       'cardinality' => 1,
-      // 'locked' => 1,
+      'locked' => 1,
     );
     field_create_field($field);
   }
@@ -543,10 +543,122 @@ function roomify_rate_add_maximum_stay_field($type_bundle) {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => 3,
+        'weight' => 4,
       ),
       'settings' => array(
         'min' => 1,
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
+
+/**
+ * Add Closed on Arrival field.
+ */
+function roomify_rate_add_closed_on_arrival_field($type_bundle) {
+  field_info_cache_clear();
+
+  // "rate_closed_on_arrival" field.
+  if (field_read_field('rate_closed_on_arrival') === FALSE) {
+    $field = array(
+      'field_name' => 'rate_closed_on_arrival',
+      'type' => 'list_boolean',
+      'cardinality' => 1,
+      'locked' => 1,
+      'indexes' => array(
+        'value' => array(
+          0 => 'value',
+        ),
+      ),
+      'locked' => 0,
+      'module' => 'list',
+      'settings' => array(
+        'allowed_values' => array(
+          0 => '',
+          1 => '',
+        ),
+        'allowed_values_function' => '',
+      ),
+      'translatable' => 0,
+    );
+    field_create_field($field);
+  }
+
+  field_cache_clear();
+
+  // "rate_closed_on_arrival" field instance.
+  if (field_read_instance('roomify_rate', 'rate_closed_on_arrival', $type_bundle) === FALSE) {
+    $instance = array(
+      'field_name' => 'rate_closed_on_arrival',
+      'entity_type' => 'roomify_rate',
+      'label' => 'Closed on Arrival',
+      'bundle' => $type_bundle,
+      'required' => FALSE,
+      'widget' => array(
+        'active' => 1,
+        'module' => 'options',
+        'settings' => array(
+          'display_label' => 1,
+        ),
+        'type' => 'options_onoff',
+        'weight' => 5,
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
+
+/**
+ * Add Closed on Departure field.
+ */
+function roomify_rate_add_closed_on_departure_field($type_bundle) {
+  field_info_cache_clear();
+
+  // "rate_closed_on_departure" field.
+  if (field_read_field('rate_closed_on_departure') === FALSE) {
+    $field = array(
+      'field_name' => 'rate_closed_on_departure',
+      'type' => 'list_boolean',
+      'cardinality' => 1,
+      'locked' => 1,
+      'indexes' => array(
+        'value' => array(
+          0 => 'value',
+        ),
+      ),
+      'locked' => 0,
+      'module' => 'list',
+      'settings' => array(
+        'allowed_values' => array(
+          0 => '',
+          1 => '',
+        ),
+        'allowed_values_function' => '',
+      ),
+      'translatable' => 0,
+    );
+    field_create_field($field);
+  }
+
+  field_cache_clear();
+
+  // "rate_closed_on_departure" field instance.
+  if (field_read_instance('roomify_rate', 'rate_closed_on_departure', $type_bundle) === FALSE) {
+    $instance = array(
+      'field_name' => 'rate_closed_on_departure',
+      'entity_type' => 'roomify_rate',
+      'label' => 'Closed on Departure',
+      'bundle' => $type_bundle,
+      'required' => FALSE,
+      'widget' => array(
+        'active' => 1,
+        'module' => 'options',
+        'settings' => array(
+          'display_label' => 1,
+        ),
+        'type' => 'options_onoff',
+        'weight' => 6,
       ),
     );
     field_create_instance($instance);
@@ -562,5 +674,7 @@ function roomify_rate_entity_insert($entity, $type) {
     roomify_rate_add_bat_type_reference_field($entity->type);
     roomify_rate_add_minimum_stay_field($entity->type);
     roomify_rate_add_maximum_stay_field($entity->type);
+    roomify_rate_add_closed_on_arrival_field($entity->type);
+    roomify_rate_add_closed_on_departure_field($entity->type);
   }
 }
