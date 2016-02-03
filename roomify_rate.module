@@ -512,6 +512,48 @@ function roomify_rate_add_minimum_stay_field($type_bundle) {
 }
 
 /**
+ * Add maximum stay field.
+ */
+function roomify_rate_add_maximum_stay_field($type_bundle) {
+  field_info_cache_clear();
+
+  // "rate_maximum_stay" field.
+  if (field_read_field('rate_maximum_stay') === FALSE) {
+    $field = array(
+      'field_name' => 'rate_maximum_stay',
+      'type' => 'number_integer',
+      'cardinality' => 1,
+      // 'locked' => 1,
+    );
+    field_create_field($field);
+  }
+
+  field_cache_clear();
+
+  // "rate_maximum_stay" field instance.
+  if (field_read_instance('roomify_rate', 'rate_maximum_stay', $type_bundle) === FALSE) {
+    $instance = array(
+      'field_name' => 'rate_maximum_stay',
+      'entity_type' => 'roomify_rate',
+      'label' => 'Maximum Stay',
+      'bundle' => $type_bundle,
+      'required' => FALSE,
+      'widget' => array(
+        'active' => 0,
+        'module' => 'number',
+        'settings' => array(),
+        'type' => 'number',
+        'weight' => 3,
+      ),
+      'settings' => array(
+        'min' => 1,
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
+
+/**
  * Implements hook_entity_insert().
  */
 function roomify_rate_entity_insert($entity, $type) {
@@ -519,5 +561,6 @@ function roomify_rate_entity_insert($entity, $type) {
     roomify_rate_add_event_type_reference_field($entity->type);
     roomify_rate_add_bat_type_reference_field($entity->type);
     roomify_rate_add_minimum_stay_field($entity->type);
+    roomify_rate_add_maximum_stay_field($entity->type);
   }
 }
