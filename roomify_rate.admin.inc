@@ -145,6 +145,12 @@ function roomify_rate_edit_form($form, &$form_state, $rate) {
     ),
     '#weight' => 90,
   );
+
+  $form['type'] = array(
+    '#type' => 'value',
+    '#value' => $rate->type,
+  );
+
   $form['author']['author_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Authored by'),
@@ -178,7 +184,17 @@ function roomify_rate_edit_form($form, &$form_state, $rate) {
     '#submit' => $submit + array('roomify_rate_edit_form_submit'),
   );
 
+  $form['#validate'][] = 'roomify_rate_edit_form_validate';
+
   return $form;
+}
+
+/**
+ * Form API validate callback for the event form.
+ */
+function roomify_rate_edit_form_validate(&$form, &$form_state) {
+  // Notify field widgets to validate their data.
+  entity_form_field_validate('roomify_rate', $form, $form_state);
 }
 
 /**
