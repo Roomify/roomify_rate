@@ -87,6 +87,15 @@ function roomify_rate_entity_info() {
 }
 
 /**
+ * Implements hook_bat_event_target_entity_types()
+ *
+ * Register BAT Unit as a BAT event target entity type.
+ */
+function roomify_rate_bat_event_target_entity_types() {
+  return(array('roomify_rate'));
+}
+
+/**
  * Implements hook_entity_info_alter().
  *
  * We are adding the info about the rate types via a hook to avoid a recursion
@@ -190,6 +199,16 @@ class RoomifyRate extends Entity {
    */
   protected function defaultLabel() {
     return $this->name;
+  }
+
+  /**
+   * @param $event_type
+   *
+   * @return mixed
+   */
+  public function getEventDefaultValue($event_type) {
+    $default_value = isset($this->rate_default_rate[LANGUAGE_NONE][0]['amount']) ? $this->rate_default_rate[LANGUAGE_NONE][0]['amount'] : 0;
+    return $default_value;
   }
 
 }
