@@ -81,7 +81,7 @@ function roomify_rate_type_form($form, &$form_state, $rate_type, $op = 'edit') {
     '#submit' => array('roomify_rate_type_form_submit'),
   );
 
-  $form['#validate'][] = 'roomify_rate_type_edit_form_validate';
+  $form['#validate'][] = 'roomify_rate_type_form_validate';
 
   return $form;
 }
@@ -89,7 +89,7 @@ function roomify_rate_type_form($form, &$form_state, $rate_type, $op = 'edit') {
 /**
  * Form API validate callback for the rate type form.
  */
-function roomify_rate_type_edit_form_validate(&$form, &$form_state) {
+function roomify_rate_type_form_validate(&$form, &$form_state) {
   // Notify field widgets to validate their data.
   entity_form_field_validate('roomify_rate_type', $form, $form_state);
 }
