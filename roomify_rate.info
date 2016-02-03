@@ -5,6 +5,7 @@ core = 7.x
 package = Roomify
 
 dependencies[] = bat_event
+dependencies[] = commerce_price
 
 files[] = roomify_rate.admin.inc
 files[] = roomify_rate_type.admin.inc
