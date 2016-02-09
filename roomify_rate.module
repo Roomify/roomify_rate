@@ -439,7 +439,7 @@ function roomify_rate_add_default_rate_field($type_bundle) {
 
   field_cache_clear();
 
-  // "rate_event_reference" field instance.
+  // "rate_default_rate" field instance.
   if (field_read_instance('roomify_rate', 'rate_default_rate', $type_bundle) === FALSE) {
     $instance = array(
       'field_name' => 'rate_default_rate',
@@ -463,20 +463,20 @@ function roomify_rate_add_default_rate_field($type_bundle) {
 }
 
 /**
- * Add "Event" reference field.
+ * Add "Event type" reference field.
  */
 function roomify_rate_add_event_type_reference_field($type_bundle) {
   field_info_cache_clear();
 
-  // "rate_event_reference" field.
-  if (field_read_field('rate_event_reference') === FALSE) {
+  // "rate_event_type_reference" field.
+  if (field_read_field('rate_event_type_reference') === FALSE) {
     $field = array(
-      'field_name' => 'rate_event_reference',
+      'field_name' => 'rate_event_type_reference',
       'type' => 'entityreference',
       'cardinality' => 1,
       'locked' => 1,
       'settings' => array(
-        'target_type' => 'bat_event',
+        'target_type' => 'bat_event_type',
       ),
     );
     field_create_field($field);
@@ -484,12 +484,12 @@ function roomify_rate_add_event_type_reference_field($type_bundle) {
 
   field_cache_clear();
 
-  // "rate_event_reference" field instance.
-  if (field_read_instance('roomify_rate', 'rate_event_reference', $type_bundle) === FALSE) {
+  // "rate_event_type_reference" field instance.
+  if (field_read_instance('roomify_rate', 'rate_event_type_reference', $type_bundle) === FALSE) {
     $instance = array(
-      'field_name' => 'rate_event_reference',
+      'field_name' => 'rate_event_type_reference',
       'entity_type' => 'roomify_rate',
-      'label' => 'Event',
+      'label' => 'Event type',
       'bundle' => $type_bundle,
       'required' => FALSE,
       'widget' => array(
@@ -506,7 +506,7 @@ function roomify_rate_add_event_type_reference_field($type_bundle) {
 function roomify_rate_add_bat_type_reference_field($type_bundle) {
   field_info_cache_clear();
 
-  // "rate_event_reference" field.
+  // "rate_bat_type_reference" field.
   if (field_read_field('rate_bat_type_reference') === FALSE) {
     $field = array(
       'field_name' => 'rate_bat_type_reference',
