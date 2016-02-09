@@ -211,6 +211,39 @@ class RoomifyRate extends Entity {
     return $default_value;
   }
 
+  /**
+   * @param $event_type
+   * @param $value
+   *
+   * @return mixed
+   */
+  public function formatEventValue($event_type, $value) {
+    $field = 'rate_default_rate';
+    $field_info = field_info_field($field);
+    $field_info_instance = field_info_instance('roomify_rate', $field, $this->type);
+
+    if ($field_info['type'] == 'commerce_price') {
+      if (empty($field_info_instance['widget']['settings']['currency_code']) ||
+          $field_info_instance['widget']['settings']['currency_code'] == 'default') {
+        $currency_code = NULL;
+      }
+      else {
+        $currency_code = $field_info_instance['widget']['settings']['currency_code'];
+      }
+
+      $price = array(
+        'amount' => $value,
+        'currency_code' => $currency_code,
+      );
+      $field_view_value = field_view_value('roomify_rate', $this, $field, $price);
+    }
+    else {
+      $field_view_value = field_view_value('roomify_rate', $this, $field, $value);
+    }
+
+    return $field_view_value['#markup'];
+  }
+
 }
 
 /**
@@ -259,6 +292,32 @@ class RoomifyRateController extends EntityAPIController {
     $rate = parent::create($values);
 
     return $rate;
+  }
+
+  public function getReferencedIds($unit_type, $ids = array()) {
+    $query = new EntityFieldQuery();
+
+    $query->entityCondition('entity_type', 'roomify_rate')
+          ->fieldCondition('rate_bat_type_reference', 'target_id', $unit_type);
+    if (!empty($ids)) {
+      $query->propertyCondition('rate_id', $ids, 'IN');
+    }
+    $result = $query->execute();
+
+    $rates = array();
+    if (isset($result['roomify_rate'])) {
+      foreach ($result['roomify_rate'] as $rate) {
+        $roomify_rate = roomify_rate_load($rate->rate_id);
+
+        $rates[] = array(
+          'id' => $roomify_rate->rate_id,
+          'name' => $roomify_rate->name,
+          'type_id' => $unit_type,
+        );
+      }
+    }
+
+    return $rates;
   }
 
   /**
