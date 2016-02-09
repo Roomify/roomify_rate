@@ -9,7 +9,7 @@
  * UI controller.
  */
 class RoomifyRateUIController extends EntityDefaultUIController {
-	/**
+  /**
    * Overrides hook_menu() defaults.
    */
   public function hook_menu() {

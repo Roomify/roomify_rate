@@ -89,10 +89,10 @@ function roomify_rate_entity_info() {
 /**
  * Implements hook_bat_event_target_entity_types()
  *
- * Register BAT Unit as a BAT event target entity type.
+ * Register Roomify Rate as a BAT event target entity type.
  */
 function roomify_rate_bat_event_target_entity_types() {
-  return(array('roomify_rate'));
+  return (array('roomify_rate'));
 }
 
 /**
@@ -429,6 +429,7 @@ function roomify_rate_type_delete(RoomifyRateType $bundle) {
  *   Integer specifying the rate id.
  * @param bool $reset
  *   A boolean indicating whether the internal cache should be reset.
+ *
  * @return RoomifyRate|false
  *   A fully-loaded $rate object or FALSE if it cannot be loaded.
  *
@@ -806,4 +807,38 @@ function roomify_rate_entity_insert($entity, $type) {
     roomify_rate_add_closed_on_arrival_field($entity->type);
     roomify_rate_add_closed_on_departure_field($entity->type);
   }
+}
+
+/**
+ * @param $type_id
+ * @param $nights
+ *
+ * @return RoomifyRate|false
+ */
+function roomify_rate_get_rate($type_id, $nights) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'roomify_rate')
+        ->fieldCondition('rate_bat_type_reference', 'target_id', $type_id);
+
+  $result = $query->execute();
+
+  $min_stay = 1;
+  $max_stay = PHP_INT_MAX;
+  $current_rate = FALSE;
+  if (isset($result['roomify_rate'])) {
+    foreach ($result['roomify_rate'] as $rate) {
+      $rate = roomify_rate_load($rate->rate_id);
+
+      $min = (isset($rate->rate_minimum_stay[LANGUAGE_NONE][0]['value'])) ? $rate->rate_minimum_stay[LANGUAGE_NONE][0]['value'] : 1;
+      $max = (isset($rate->rate_maximum_stay[LANGUAGE_NONE][0]['value'])) ? $rate->rate_maximum_stay[LANGUAGE_NONE][0]['value'] : PHP_INT_MAX;
+
+      if ($nights >= $min && $nights <= $max && $min >= $min_stay) {
+        $current_rate = $rate;
+        $min_stay = $min;
+        $max_stay = $max;
+      }
+    }
+  }
+
+  return $current_rate;
 }
