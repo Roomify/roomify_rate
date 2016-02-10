@@ -146,7 +146,7 @@ function roomify_rate_views_api() {
 }
 
 /**
- * Determines whether the given user has access to a unit.
+ * Determines whether the given user has access to a rate.
  *
  * @param string $op
  *   The operation being performed. One of 'view', 'update', 'create', 'delete'
