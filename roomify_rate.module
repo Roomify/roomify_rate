@@ -700,7 +700,6 @@ function roomify_rate_add_closed_on_arrival_field($type_bundle) {
           0 => 'value',
         ),
       ),
-      'locked' => 0,
       'module' => 'list',
       'settings' => array(
         'allowed_values' => array(
@@ -756,7 +755,6 @@ function roomify_rate_add_closed_on_departure_field($type_bundle) {
           0 => 'value',
         ),
       ),
-      'locked' => 0,
       'module' => 'list',
       'settings' => array(
         'allowed_values' => array(
