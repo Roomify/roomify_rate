@@ -461,6 +461,13 @@ function roomify_rate_load_multiple($rate_ids = array(), $conditions = array(), 
 }
 
 /**
+ * Deletes a rate from the db.
+ */
+function roomify_rate_delete(RoomifyRate $rate) {
+  $rate->delete();
+}
+
+/**
  * Implements hook_theme().
  */
 function roomify_rate_theme() {
