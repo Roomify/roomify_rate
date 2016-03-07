@@ -83,6 +83,81 @@ function roomify_rate_entity_info() {
     ),
   );
 
+  $return['roomify_rate_restriction'] = array(
+    'label' => t('Roomify Rate Restriction'),
+    // The entity class and controller class extend the classes provided by the
+    // Entity API.
+    'entity class' => 'RoomifyRateRestriction',
+    'controller class' => 'RoomifyRateRestrictionController',
+    'base table' => 'roomify_rate_restrictions',
+    'fieldable' => TRUE,
+    'entity keys' => array(
+      'id' => 'rate_restriction_id',
+      'bundle' => 'type',
+      'label' => 'name',
+    ),
+    // Bundles are defined by the rate bundles below.
+    'bundles' => array(),
+    // Bundle keys tell the FieldAPI how to extract information from the bundle
+    // objects.
+    'bundle keys' => array(
+      'bundle' => 'type',
+    ),
+    'label callback' => 'entity_class_label',
+    'uri callback' => 'entity_class_uri',
+    'creation callback' => 'roomify_rate_restriction_create',
+    'access callback' => 'roomify_rate_restriction_access',
+    'access arguments' => array(
+      'user key' => 'uid',
+      'access tag' => 'roomify_rate_restriction_access',
+    ),
+    'permission labels' => array(
+      'singular' => t('rate restriction'),
+      'plural' => t('rate restrictions'),
+    ),
+    'module' => 'roomify_rate',
+    // The information below is used by the RoomifyRateRestrictionUIController
+    // (which extends the EntityDefaultUIController).
+    'admin ui' => array(
+      'path' => 'admin/bat/config/rate-restriction',
+      'file' => 'roomify_rate_restriction.admin.inc',
+      'controller class' => 'RoomifyRateRestrictionUIController',
+      'menu wildcard' => '%roomify_rate_restriction',
+    ),
+    'translation' => array(
+      'entity_translation' => array(
+        'base path' => 'admin/bat/config/rate-restriction/%roomify_rate_restriction',
+        'default settings' => array(
+          'default_language' => LANGUAGE_NONE,
+          'hide_language_selector' => FALSE,
+        ),
+      ),
+    ),
+  );
+
+  $return['roomify_rate_restriction_type'] = array(
+    'label' => t('Roomify Rate Restriction Type'),
+    'entity class' => 'RoomifyRateRestrictionType',
+    'controller class' => 'RoomifyRateRestrictionTypeController',
+    'base table' => 'roomify_rate_restriction_types',
+    'fieldable' => TRUE,
+    'bundle of' => 'roomify_rate_restriction',
+    'exportable' => TRUE,
+    'entity keys' => array(
+      'id' => 'id',
+      'name' => 'type',
+      'label' => 'label',
+    ),
+    'access callback' => 'roomify_rate_restriction_type_access',
+    'module' => 'roomify_rate',
+    // Enable the entity API's admin UI.
+    'admin ui' => array(
+      'path' => 'admin/bat/config/rate-restriction-types',
+      'file' => 'roomify_rate_restriction_type.admin.inc',
+      'controller class' => 'RoomifyRateRestrictionTypeUIController',
+    ),
+  );
+
   return $return;
 }
 
@@ -113,6 +188,18 @@ function roomify_rate_entity_info_alter(&$entity_info) {
       ),
     );
   }
+
+  foreach (roomify_rate_get_restriction_types() as $type => $info) {
+    $entity_info['roomify_rate_restriction']['bundles'][$type] = array(
+      'label' => $info->label,
+      'admin' => array(
+        'path' => 'admin/bat/config/rate-restriction-types/manage/%roomify_rate_restriction_type',
+        'real path' => 'admin/bat/config/rate-restriction-types/manage/' . $type,
+        'bundle argument' => 5,
+        'access arguments' => array('bypass roomify_rate_restriction entities access'),
+      ),
+    );
+  }
 }
 
 /**
@@ -131,6 +218,8 @@ function roomify_rate_permission() {
   );
 
   $permissions += bat_entity_access_permissions('roomify_rate');
+
+  $permissions += bat_entity_access_permissions('roomify_rate_restriction');
 
   return $permissions;
 }
@@ -476,6 +565,10 @@ function roomify_rate_theme() {
       'variables' => array('content' => array()),
       'file' => 'roomify_rate.admin.inc',
     ),
+    'roomify_rate_restriction_add_list' => array(
+      'variables' => array('content' => array()),
+      'file' => 'roomify_rate_restriction.admin.inc',
+    ),
   );
 }
 
@@ -489,6 +582,11 @@ function roomify_rate_entity_insert($entity, $type) {
     roomify_rate_add_default_rate_field($entity->type);
     roomify_rate_add_event_type_reference_field($entity->type);
     roomify_rate_add_bat_type_reference_field($entity->type);
+  }
+
+  if ($type == 'roomify_rate_restriction_type') {
+    module_load_include('inc', 'roomify_rate', 'roomify_rate.fields');
+
     roomify_rate_add_minimum_stay_field($entity->type);
     roomify_rate_add_maximum_stay_field($entity->type);
     roomify_rate_add_closed_on_arrival_field($entity->type);
@@ -530,4 +628,257 @@ function roomify_rate_get_rate($type_id, $nights) {
   }
 
   return $current_rate;
+}
+
+/**
+ * The class used for rate entities
+ */
+class RoomifyRateRestriction extends Entity {
+
+  public function __construct($values = array()) {
+    parent::__construct($values, 'roomify_rate_restriction');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function defaultLabel() {
+    return $this->name;
+  }
+
+}
+
+/**
+ * The class used for rate type entities
+ */
+class RoomifyRateRestrictionType extends Entity {
+
+  /**
+   * The rate type.
+   *
+   * @var string
+   */
+  public $type;
+
+  /**
+   * The rate type label.
+   *
+   * @var string
+   */
+  public $label;
+
+  public function __construct($values = array()) {
+    parent::__construct($values, 'roomify_rate_restriction_type');
+  }
+
+}
+
+/**
+ * The Controller for RoomifyRateRestriction entities
+ */
+class RoomifyRateRestrictionController extends EntityAPIController {
+
+  public function __construct($entityType) {
+    parent::__construct($entityType);
+  }
+
+  public function create(array $values = array()) {
+    $values += array(
+      'rate_restriction_id' => '',
+      'is_new' => TRUE,
+      'data' => '',
+      'name' => '',
+      'created' => '',
+    );
+
+    $rate = parent::create($values);
+
+    return $rate;
+  }
+
+  /**
+   * Overriding the buildContent function to add entity specific fields.
+   */
+  public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
+    $content = parent::buildContent($entity, $view_mode, $langcode, $content);
+
+    return $content;
+  }
+
+}
+
+/**
+ * The Controller for RoomifyRateRestrictionType entities
+ */
+class RoomifyRateRestrictionTypeController extends EntityAPIControllerExportable {
+
+  public function __construct($entityType) {
+    parent::__construct($entityType);
+  }
+
+  public function create(array $values = array()) {
+    $values += array(
+      'id' => '',
+      'is_new' => TRUE,
+      'data' => '',
+    );
+
+    $rate_type = parent::create($values);
+
+    return $rate_type;
+  }
+
+}
+
+/**
+ * Determines whether the given user has access to a rate restriction.
+ *
+ * @param string $op
+ *   The operation being performed. One of 'view', 'update', 'create', 'delete'
+ *   or just 'edit' (being the same as 'create' or 'update').
+ * @param RoomifyRateRestriction $rate_restriction
+ *   Optionally a rate to check access for. If nothing is
+ *   given, access for all rates is determined.
+ * @param object $account
+ *   The user to check for. Leave it to NULL to check for the global user.
+ *
+ * @return boolean
+ *   Whether access is allowed or not.
+ */
+function roomify_rate_restriction_access($op, $rate = NULL, $account = NULL) {
+  return bat_entity_access($op, $rate, $account, 'roomify_rate_restriction');
+}
+
+/**
+ * Access callback: Checks whether the user has permission to add a rate.
+ *
+ * @return bool
+ *   TRUE if the user has add permission, otherwise FALSE.
+ */
+function roomify_rate_restriction_add_access() {
+  if (user_access('administer roomify_rate_restriction_type entities')) {
+    return TRUE;
+  }
+
+  $bundles = roomify_rate_get_restriction_types();
+  foreach ($bundles as $bundle) {
+    if (roomify_rate_access('create', roomify_rate_restriction_create(array('type' => $bundle->type, 'uid' => 0)))) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+function roomify_rate_restriction_type_access() {
+  return TRUE;
+}
+
+/**
+ * Create a rate restriction object.
+ */
+function roomify_rate_restriction_create($values = array()) {
+  return entity_get_controller('roomify_rate_restriction')->create($values);
+}
+
+/**
+ * Create a rate restriction type object.
+ */
+function roomify_rate_restriction_type_create($values = array()) {
+  return entity_get_controller('roomify_rate_restriction_type')->create($values);
+}
+
+/**
+ * Menu argument loader; Load a rate restriction type by string.
+ *
+ * @param $type
+ *   The machine-readable name of a rate restriction type to load.
+ * @param bool $reset
+ *   A boolean indicating whether the internal cache should be reset.
+ *
+ * @return array|false
+ *   A rate restriction type array or FALSE if $type does not exist.
+ */
+function roomify_rate_restriction_type_load($type, $reset = FALSE) {
+  return roomify_rate_get_restriction_types($type, $reset);
+}
+
+/**
+ * Gets an array of all rate restriction types, keyed by the type name.
+ *
+ * @param string $type_name
+ *   If set, the type with the given name is returned.
+ * @param bool $reset
+ *   A boolean indicating that the internal cache should be reset.
+ *
+ * @return RoomifyRateRestrictionType[]
+ *   Depending whether $type isset, an array of rate restriction types or a single one.
+ */
+function roomify_rate_get_restriction_types($type_name = NULL, $reset = FALSE) {
+  // entity_load() will get the Entity controller for our rate type
+  // entity and call the load function of that object.
+  $types = entity_load_multiple_by_name('roomify_rate_restriction_type', isset($type_name) ? array($type_name) : FALSE);
+  return isset($type_name) ? reset($types) : $types;
+}
+
+/**
+ * Saves a rate restriction type to the db.
+ *
+ * @param RoomifyRateType $rate_type
+ *   The rate type to save.
+ */
+function roomify_rate_restriction_type_save(RoomifyRateRestrictionType $rate_type) {
+  $rate_type->save();
+}
+
+/**
+ * Deletes a rate restriction type from the db.
+ */
+function roomify_rate_restriction_type_delete(RoomifyRateRestrictionType $bundle) {
+  $bundle->delete();
+}
+
+/**
+ * Fetches a rate restriction object.
+ *
+ * @param int $rate_restriction_id
+ *   Integer specifying the rate id.
+ * @param bool $reset
+ *   A boolean indicating whether the internal cache should be reset.
+ *
+ * @return RoomifyRateRestriction|false
+ *   A fully-loaded $rate_restriction object or FALSE if it cannot be loaded.
+ *
+ * @see roomify_rate_restriction_load_multiple()
+ */
+function roomify_rate_restriction_load($rate_restriction_id, $reset = FALSE) {
+  $rate_restrictions = roomify_rate_restriction_load_multiple(array($rate_restriction_id), array(), $reset);
+  return reset($rate_restrictions);
+}
+
+/**
+ * Loads multiple rate restrictions based on certain conditions.
+ *
+ * @param array $rate_ids
+ *   An array of rate IDs.
+ * @param array $conditions
+ *   An array of conditions to match against the {roomify_rate_restrictions} table.
+ * @param bool $reset
+ *   A boolean indicating that the internal cache should be reset.
+ *
+ * @return array
+ *   An array of rate objects, indexed by rate_restriction_id.
+ *
+ * @see entity_load()
+ * @see roomify_rate_restriction_load()
+ */
+function roomify_rate_restriction_load_multiple($rate_ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('roomify_rate_restriction', $rate_ids, $conditions, $reset);
+}
+
+/**
+ * Deletes a rate restriction from the db.
+ */
+function roomify_rate_restriction_delete(RoomifyRateRestriction $rate_restriction) {
+  $rate_restriction->delete();
 }

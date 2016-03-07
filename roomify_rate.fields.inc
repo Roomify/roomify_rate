@@ -146,10 +146,10 @@ function roomify_rate_add_minimum_stay_field($type_bundle) {
   field_cache_clear();
 
   // "rate_minimum_stay" field instance.
-  if (field_read_instance('roomify_rate', 'rate_minimum_stay', $type_bundle) === FALSE) {
+  if (field_read_instance('roomify_rate_restriction', 'rate_minimum_stay', $type_bundle) === FALSE) {
     $instance = array(
       'field_name' => 'rate_minimum_stay',
-      'entity_type' => 'roomify_rate',
+      'entity_type' => 'roomify_rate_restriction',
       'label' => 'Minimum Stay',
       'bundle' => $type_bundle,
       'required' => FALSE,
@@ -188,10 +188,10 @@ function roomify_rate_add_maximum_stay_field($type_bundle) {
   field_cache_clear();
 
   // "rate_maximum_stay" field instance.
-  if (field_read_instance('roomify_rate', 'rate_maximum_stay', $type_bundle) === FALSE) {
+  if (field_read_instance('roomify_rate_restriction', 'rate_maximum_stay', $type_bundle) === FALSE) {
     $instance = array(
       'field_name' => 'rate_maximum_stay',
-      'entity_type' => 'roomify_rate',
+      'entity_type' => 'roomify_rate_restriction',
       'label' => 'Maximum Stay',
       'bundle' => $type_bundle,
       'required' => FALSE,
@@ -244,10 +244,10 @@ function roomify_rate_add_closed_on_arrival_field($type_bundle) {
   field_cache_clear();
 
   // "rate_closed_on_arrival" field instance.
-  if (field_read_instance('roomify_rate', 'rate_closed_on_arrival', $type_bundle) === FALSE) {
+  if (field_read_instance('roomify_rate_restriction', 'rate_closed_on_arrival', $type_bundle) === FALSE) {
     $instance = array(
       'field_name' => 'rate_closed_on_arrival',
-      'entity_type' => 'roomify_rate',
+      'entity_type' => 'roomify_rate_restriction',
       'label' => 'Closed on Arrival',
       'bundle' => $type_bundle,
       'required' => FALSE,
@@ -299,10 +299,10 @@ function roomify_rate_add_closed_on_departure_field($type_bundle) {
   field_cache_clear();
 
   // "rate_closed_on_departure" field instance.
-  if (field_read_instance('roomify_rate', 'rate_closed_on_departure', $type_bundle) === FALSE) {
+  if (field_read_instance('roomify_rate_restriction', 'rate_closed_on_departure', $type_bundle) === FALSE) {
     $instance = array(
       'field_name' => 'rate_closed_on_departure',
-      'entity_type' => 'roomify_rate',
+      'entity_type' => 'roomify_rate_restriction',
       'label' => 'Closed on Departure',
       'bundle' => $type_bundle,
       'required' => FALSE,
@@ -356,10 +356,10 @@ function roomify_rate_add_add_valid_from_field($type_bundle) {
   field_cache_clear();
 
   // "rate_valid_from" field instance.
-  if (field_read_instance('roomify_rate', 'rate_valid_from', $type_bundle) === FALSE) {
+  if (field_read_instance('roomify_rate_restriction', 'rate_valid_from', $type_bundle) === FALSE) {
     $instance = array(
       'field_name' => 'rate_valid_from',
-      'entity_type' => 'roomify_rate',
+      'entity_type' => 'roomify_rate_restriction',
       'label' => 'Rate Valid From',
       'bundle' => $type_bundle,
       'required' => FALSE,
@@ -414,10 +414,10 @@ function roomify_rate_add_add_valid_to_field($type_bundle) {
   field_cache_clear();
 
   // "rate_valid_to" field instance.
-  if (field_read_instance('roomify_rate', 'rate_valid_to', $type_bundle) === FALSE) {
+  if (field_read_instance('roomify_rate_restriction', 'rate_valid_to', $type_bundle) === FALSE) {
     $instance = array(
       'field_name' => 'rate_valid_to',
-      'entity_type' => 'roomify_rate',
+      'entity_type' => 'roomify_rate_restriction',
       'label' => 'Rate Valid To',
       'bundle' => $type_bundle,
       'required' => FALSE,

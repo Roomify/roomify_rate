@@ -98,7 +98,7 @@ function roomify_rate_type_form_validate(&$form, &$form_state) {
  * Form API submit callback for the rate type form.
  */
 function roomify_rate_type_form_submit(&$form, &$form_state) {
- $rate_type = entity_ui_controller('roomify_rate_type')->entityFormSubmitBuildEntity($form, $form_state);
+  $rate_type = entity_ui_controller('roomify_rate_type')->entityFormSubmitBuildEntity($form, $form_state);
   // Save and go back.
   $rate_type->save();
 
