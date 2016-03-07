@@ -6,6 +6,7 @@ package = Roomify
 
 dependencies[] = bat_event
 dependencies[] = commerce_price
+dependencies[] = list
 
 files[] = roomify_rate.admin.inc
 files[] = roomify_rate_type.admin.inc
