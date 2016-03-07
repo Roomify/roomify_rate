@@ -133,49 +133,49 @@ function roomify_rate_schema() {
   );
 
   $schema['roomify_rate_restrictions'] = array(
-    'description' => 'The base table for Rates.',
+    'description' => 'The base table for Rate restrictions.',
     'fields' => array(
       'rate_restriction_id' => array(
-        'description' => 'Primary Key: Identifier for a Rate.',
+        'description' => 'Primary Key: Identifier for a Rate restriction.',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
       'type' => array(
-        'description' => 'The {rate_type}.type of this Rate.',
+        'description' => 'The {rate_restriction_type}.type of this Rate restriction.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
       ),
       'language' => array(
-        'description' => 'The language of the Rate.',
+        'description' => 'The language of the Rate restriction.',
         'type' => 'varchar',
         'length' => 32,
         'not null' => TRUE,
         'default' => '',
       ),
-      'name' => array(
-        'description' => 'The name of the Rate - a human-readable identifier.',
+      'label' => array(
+        'description' => 'The label of the Rate restriction.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
       ),
       'created' => array(
-        'description' => 'The Unix timestamp when the Rate was created.',
+        'description' => 'The Unix timestamp when the Rate restriction was created.',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
       ),
       'changed' => array(
-        'description' => 'The Unix timestamp when the Rate was most recently saved.',
+        'description' => 'The Unix timestamp when the Rate restriction was most recently saved.',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
       ),
       'uid' => array(
-        'description' => 'The {users}.uid that created this rate.',
+        'description' => 'The {users}.uid that created this rate restriction.',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
@@ -195,21 +195,21 @@ function roomify_rate_schema() {
   );
 
   $schema['roomify_rate_restriction_types'] = array(
-    'description' => 'The base table for Rate Types.',
+    'description' => 'The base table for Rate Restriction Types.',
     'fields' => array(
       'id' => array(
         'type' => 'serial',
         'not null' => TRUE,
-        'description' => 'Primary Key: Identifier for a rate type.',
+        'description' => 'Primary Key: Identifier for a rate restriction type.',
       ),
       'type' => array(
-        'description' => 'The {rate_type}.type of this rate type.',
+        'description' => 'The {rate_restriction_type}.type of this rate restriction type.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
       ),
       'label' => array(
-        'description' => 'The human-readable name of this rate type.',
+        'description' => 'The human-readable name of this rate restriction type.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,

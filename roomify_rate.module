@@ -94,7 +94,7 @@ function roomify_rate_entity_info() {
     'entity keys' => array(
       'id' => 'rate_restriction_id',
       'bundle' => 'type',
-      'label' => 'name',
+      'label' => 'label',
     ),
     // Bundles are defined by the rate bundles below.
     'bundles' => array(),
@@ -134,6 +134,13 @@ function roomify_rate_entity_info() {
       ),
     ),
   );
+
+  // Enable Inline Entity Form support if module is present.
+  if (module_exists('inline_entity_form')) {
+    $return['roomify_rate_restriction']['inline entity form'] = array(
+      'controller' => 'RoomifyRateRestrictionInlineEntityFormController',
+    );
+  }
 
   $return['roomify_rate_restriction_type'] = array(
     'label' => t('Roomify Rate Restriction Type'),
@@ -582,6 +589,7 @@ function roomify_rate_entity_insert($entity, $type) {
     roomify_rate_add_default_rate_field($entity->type);
     roomify_rate_add_event_type_reference_field($entity->type);
     roomify_rate_add_bat_type_reference_field($entity->type);
+    roomify_rate_add_rate_restriction_reference_field($entity->type);
   }
 
   if ($type == 'roomify_rate_restriction_type') {
@@ -881,4 +889,150 @@ function roomify_rate_restriction_load_multiple($rate_ids = array(), $conditions
  */
 function roomify_rate_restriction_delete(RoomifyRateRestriction $rate_restriction) {
   $rate_restriction->delete();
+}
+
+/**
+ * The Inline Entity Form Controller for RoomifyRateRestrictionType entities.
+ */
+if (module_exists('inline_entity_form')) {
+  class RoomifyRateRestrictionInlineEntityFormController extends EntityInlineEntityFormController {
+
+    /**
+     * Overrides EntityInlineEntityFormController::tableFields().
+     */
+    public function tableFields($bundles) {
+      $info = entity_get_info($this->entityType);
+      $metadata = entity_get_property_info($this->entityType);
+
+      $fields = array();
+
+      if (count($bundles) > 1) {
+        $bundle_key = $info['entity keys']['bundle'];
+        $fields[$bundle_key] = array(
+          'type' => 'property',
+          'label' => $metadata ? $metadata['properties'][$bundle_key]['label'] : t('Type'),
+          'weight' => 2,
+        );
+      }
+
+      return $fields;
+    }
+
+    /**
+     * Overrides EntityInlineEntityFormController::entityForm().
+     */
+    public function entityForm($form, &$form_state) {
+      module_load_include('inc', 'roomify_rate', 'roomify_rate_restriction.admin');
+      $info = entity_get_info($this->entityType);
+      $type = $form['#entity'];
+      if (!isset($type->status)) {
+        $type->status = 0;
+      }
+
+      if (!empty($info['fieldable'])) {
+        $langcode = entity_language($this->entityType, $entity);
+        field_attach_form($this->entityType, $type, $form, $form_state, $langcode);
+      }
+
+      $form['type'] = array(
+        '#type' => 'value',
+        '#value' => $type->type,
+      );
+
+      // Add the field related form elements.
+      $form_state['roomify_rate_restriction'] = $type;
+      field_attach_form('roomify_rate_restriction', $type, $form, $form_state, isset($type->language)? $type->language : NULL);
+      $form['additional_settings'] = array(
+        '#type' => 'vertical_tabs',
+        '#weight' => 99,
+      );
+
+      // Type author information for administrators.
+      $form['author'] = array(
+        '#type' => 'fieldset',
+        '#access' => user_access('bypass roomify_rate_restriction entities access'),
+        '#title' => t('Authoring information'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        '#group' => 'additional_settings',
+        '#attributes' => array(
+          'class' => array('type-form-author'),
+        ),
+        '#attached' => array(
+          'js' => array(
+            array(
+              'type' => 'setting',
+              'data' => array('anonymous' => variable_get('anonymous', t('Anonymous'))),
+            ),
+          ),
+        ),
+        '#weight' => 90,
+      );
+      $form['author']['author_name'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Authored by'),
+        '#maxlength' => 60,
+        '#autocomplete_path' => 'user/autocomplete',
+        '#default_value' => !empty($type->author_name) ? $type->author_name : '',
+        '#weight' => -1,
+        '#description' => t('Leave blank for %anonymous.', array('%anonymous' => variable_get('anonymous', t('Anonymous')))),
+      );
+      $form['author']['date'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Authored on'),
+        '#maxlength' => 25,
+        '#description' => t('Format: %time. The date format is YYYY-MM-DD and %timezone is the time zone offset from UTC. Leave blank to use the time of form submission.', array('%time' => !empty($type->date) ? date_format(date_create($type->date), 'Y-m-d H:i:s O') : format_date($type->created, 'custom', 'Y-m-d H:i:s O'), '%timezone' => !empty($type->date) ? date_format(date_create($type->date), 'O') : format_date($type->created, 'custom', 'O'))),
+        '#default_value' => !empty($type->date) ? $type->date : '',
+      );
+
+      // Type publishing options for administrators.
+      $form['options'] = array(
+        '#type' => 'fieldset',
+        '#access' => user_access('bypass bat_type entities access'),
+        '#title' => t('Publishing options'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        '#group' => 'additional_settings',
+        '#attributes' => array(
+          'class' => array('type-form-published'),
+        ),
+        '#weight' => 95,
+      );
+      $form['options']['status'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Published'),
+        '#default_value' => $type->status,
+      );
+
+      $form['actions'] = array(
+        '#type' => 'actions',
+        '#tree' => FALSE,
+      );
+
+      return $form;
+    }
+
+    /**
+     * Overrides EntityInlineEntityFormController::entityFormSubmit().
+     */
+    public function entityFormSubmit(&$entity_form, &$form_state) {
+      parent::entityFormSubmit($entity_form, $form_state);
+      $entity = $entity_form['#entity'];
+
+      if ($entity->type_id !== '') {
+        $entity->changed = time();
+      }
+
+      if (isset($entity->author_name)) {
+        if ($account = user_load_by_name($entity->author_name)) {
+          $entity->uid = $account->uid;
+        }
+        else {
+          $entity->uid = 0;
+        }
+      }
+
+      $entity->save();
+    }
+  }
 }

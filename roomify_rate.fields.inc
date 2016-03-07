@@ -10,17 +10,9 @@ function roomify_rate_add_default_rate_field($type_bundle) {
   if (field_read_field('rate_default_rate') === FALSE) {
     $field = array(
       'field_name' => 'rate_default_rate',
-      'type' => 'entityreference',
+      'type' => 'commerce_price',
       'cardinality' => 1,
       'locked' => 1,
-      'indexes' => array(
-        'currency_price' => array(
-          0 => 'amount',
-          1 => 'currency_code',
-        ),
-      ),
-      'module' => 'commerce_price',
-      'type' => 'commerce_price',
     );
     field_create_field($field);
   }
@@ -43,7 +35,6 @@ function roomify_rate_add_default_rate_field($type_bundle) {
           'currency_code' => 'default',
         ),
         'type' => 'commerce_price_full',
-        'weight' => 0,
       ),
     );
     field_create_instance($instance);
@@ -158,7 +149,6 @@ function roomify_rate_add_minimum_stay_field($type_bundle) {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => 3,
       ),
       'settings' => array(
         'min' => 1,
@@ -200,7 +190,6 @@ function roomify_rate_add_maximum_stay_field($type_bundle) {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => 4,
       ),
       'settings' => array(
         'min' => 1,
@@ -223,12 +212,6 @@ function roomify_rate_add_closed_on_arrival_field($type_bundle) {
       'type' => 'list_boolean',
       'cardinality' => 1,
       'locked' => 1,
-      'indexes' => array(
-        'value' => array(
-          0 => 'value',
-        ),
-      ),
-      'module' => 'list',
       'settings' => array(
         'allowed_values' => array(
           0 => '',
@@ -236,7 +219,6 @@ function roomify_rate_add_closed_on_arrival_field($type_bundle) {
         ),
         'allowed_values_function' => '',
       ),
-      'translatable' => 0,
     );
     field_create_field($field);
   }
@@ -258,7 +240,6 @@ function roomify_rate_add_closed_on_arrival_field($type_bundle) {
           'display_label' => 1,
         ),
         'type' => 'options_onoff',
-        'weight' => 5,
       ),
     );
     field_create_instance($instance);
@@ -278,12 +259,6 @@ function roomify_rate_add_closed_on_departure_field($type_bundle) {
       'type' => 'list_boolean',
       'cardinality' => 1,
       'locked' => 1,
-      'indexes' => array(
-        'value' => array(
-          0 => 'value',
-        ),
-      ),
-      'module' => 'list',
       'settings' => array(
         'allowed_values' => array(
           0 => '',
@@ -291,7 +266,6 @@ function roomify_rate_add_closed_on_departure_field($type_bundle) {
         ),
         'allowed_values_function' => '',
       ),
-      'translatable' => 0,
     );
     field_create_field($field);
   }
@@ -313,7 +287,6 @@ function roomify_rate_add_closed_on_departure_field($type_bundle) {
           'display_label' => 1,
         ),
         'type' => 'options_onoff',
-        'weight' => 6,
       ),
     );
     field_create_instance($instance);
@@ -432,6 +405,51 @@ function roomify_rate_add_add_valid_to_field($type_bundle) {
         'user_register_form' => FALSE,
       ),
     );
+    field_create_instance($instance);
+  }
+}
+
+/**
+ * Add Default Rate Price field.
+ */
+function roomify_rate_add_rate_restriction_reference_field($type_bundle) {
+  field_info_cache_clear();
+
+  // "rate_restrictions" field.
+  if (field_read_field('rate_restrictions') === FALSE) {
+    $field = array(
+      'field_name' => 'rate_restrictions',
+      'type' => 'entityreference',
+      'cardinality' => -1,
+      'locked' => 1,
+      'settings' => array(
+        'target_type' => 'roomify_rate_restriction',
+      ),
+    );
+    field_create_field($field);
+  }
+
+  field_cache_clear();
+
+  // "rate_restrictions" field instance.
+  if (field_read_instance('roomify_rate', 'rate_restrictions', $type_bundle) === FALSE) {
+    $instance = array(
+      'field_name' => 'rate_restrictions',
+      'entity_type' => 'roomify_rate',
+      'label' => 'Rate restrictions',
+      'bundle' => $type_bundle,
+      'required' => FALSE,
+      'widget' => array(
+        'type' => 'entityreference_autocomplete',
+      ),
+    );
+
+    // Check for IEF integration and use IEF widget if present.
+    $entity_info = entity_get_info('roomify_rate_restriction');
+    if (isset($entity_info['inline entity form'])) {
+      $instance['widget']['type'] = 'inline_entity_form';
+    }
+
     field_create_instance($instance);
   }
 }
