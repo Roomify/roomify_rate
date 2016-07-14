@@ -25,7 +25,7 @@ class RoomifyRateRestrictionUIController extends EntityDefaultUIController {
     // Add menu items to add each different type of rates.
     foreach (roomify_rate_get_restriction_types() as $rate_type) {
       $items[$this->path . '/add/' . $rate_type->type] = array(
-        'title' => 'Add @rate_type_label rate',
+        'title' => 'Add @rate_type_label rate restriction',
         'title arguments' => array('@rate_type_label' => $rate_type->label),
         'page callback' => 'roomify_rate_restriction_create_form_wrapper',
         'page arguments' => array($rate_type->type),
@@ -75,7 +75,7 @@ function roomify_rate_restriction_form($form, &$form_state, $rate, $op = 'edit')
   global $user;
   // Add the breadcrumb for the form's location.
   roomify_rate_restriction_set_breadcrumb();
-  drupal_set_title(t('Edit @rate_name', array('@rate_name' => $rate->name)));
+  drupal_set_title(t('Edit @rate_name', array('@rate_name' => $rate->label)));
 
   $rate->date = format_date($rate->created, 'custom', 'Y-m-d H:i:s O');
   $account = user_load($rate->uid);
@@ -107,10 +107,10 @@ function roomify_rate_restriction_create_form_wrapper($type) {
  * Generates the rate editing form.
  */
 function roomify_rate_restriction_edit_form($form, &$form_state, $rate) {
-  $form['name'] = array(
+  $form['label'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
-    '#default_value' => isset($rate->name) ? $rate->name : '',
+    '#default_value' => isset($rate->label) ? $rate->label : '',
     '#maxlength' => 255,
     '#required' => TRUE,
     '#weight' => -99,

@@ -684,7 +684,7 @@ class RoomifyRateRestriction extends Entity {
    * {@inheritdoc}
    */
   protected function defaultLabel() {
-    return $this->name;
+    return $this->label;
   }
 
 }
