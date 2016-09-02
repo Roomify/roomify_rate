@@ -18,6 +18,7 @@ class roomify_rate_handler_edit_link_field extends views_handler_field {
     $options = parent::option_definition();
 
     $options['text'] = array('default' => '', 'translatable' => TRUE);
+    $options['destination'] = array('default' => TRUE, 'bool' => TRUE);
 
     return $options;
   }
@@ -30,6 +31,13 @@ class roomify_rate_handler_edit_link_field extends views_handler_field {
       '#title' => t('Text to display'),
       '#default_value' => $this->options['text'],
     );
+
+    $form['destination'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Include destination'),
+      '#description' => t('Include a "destination" parameter in the link to return the user to the original view upon completing the link action.'),
+      '#default_value' => $this->options['destination'],
+    );
   }
 
   function query() {
@@ -41,7 +49,12 @@ class roomify_rate_handler_edit_link_field extends views_handler_field {
     $text = !empty($this->options['text']) ? $this->options['text'] : t('edit');
     $rate_id = $values->{$this->aliases['rate_id']};
 
-    return l($text, 'admin/bat/config/rate/manage/' . $rate_id);
+    $options = array();
+    if (!empty($this->options['destination'])) {
+      $options = array('query' => drupal_get_destination());
+    }
+
+    return l($text, 'admin/bat/config/rate/manage/' . $rate_id, $options);
   }
 
 }
