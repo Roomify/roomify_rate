@@ -314,7 +314,9 @@ class RoomifyRate extends Entity {
    * @return mixed
    */
   public function formatEventValue($event_type, $value) {
-    $field = 'rate_default_rate';
+    $roomify_rate_type = roomify_rate_type_load($this->type);
+
+    $field = (isset($roomify_rate_type->data['default_value_field'])) ? $roomify_rate_type->data['default_value_field'] : 'rate_default_rate';
     $field_info = field_info_field($field);
     $field_info_instance = field_info_instance('roomify_rate', $field, $this->type);
 
@@ -332,6 +334,9 @@ class RoomifyRate extends Entity {
         'currency_code' => $currency_code,
       );
       $field_view_value = field_view_value('roomify_rate', $this, $field, $price);
+    }
+    elseif ($field_info['type'] == 'number_integer') {
+      $field_view_value = field_view_value('roomify_rate', $this, $field, array('value' => $value));
     }
     else {
       $field_view_value = field_view_value('roomify_rate', $this, $field, $value);

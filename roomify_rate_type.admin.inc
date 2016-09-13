@@ -34,7 +34,7 @@ function roomify_rate_type_form($form, &$form_state, $rate_type, $op = 'edit') {
   }
 
   $form['label'] = array(
-    '#title' => t('rate type name'),
+    '#title' => t('Label'),
     '#type' => 'textfield',
     '#default_value' => $rate_type->label,
     '#description' => t('The human-readable name of this rate type.'),
@@ -63,6 +63,23 @@ function roomify_rate_type_form($form, &$form_state, $rate_type, $op = 'edit') {
   // Add the field related form elements.
   $form_state['roomify_rate_type'] = $rate_type;
   field_attach_form('roomify_rate_type', $rate_type, $form, $form_state);
+
+  $fields_options = array();
+
+  $fields = field_info_instances('roomify_rate', $rate_type->type);
+
+  foreach ($fields as $field) {
+    $fields_options[$field['field_name']] = $field['field_name'];
+  }
+
+  $form['default_value_field'] = array(
+    '#type' => 'select',
+    '#title' => t('Select your default field'),
+    '#options' => $fields_options,
+    '#default_value' => isset($rate_type->data['default_value_field']) ? $rate_type->data['default_value_field'] : NULL,
+    '#empty_option' => t('- Select a field -'),
+    '#required' => TRUE,
+  );
 
   $form['additional_settings'] = array(
     '#type' => 'vertical_tabs',
@@ -99,6 +116,9 @@ function roomify_rate_type_form_validate(&$form, &$form_state) {
  */
 function roomify_rate_type_form_submit(&$form, &$form_state) {
   $rate_type = entity_ui_controller('roomify_rate_type')->entityFormSubmitBuildEntity($form, $form_state);
+
+  $rate_type->data['default_value_field'] = $form_state['values']['default_value_field'];
+
   // Save and go back.
   $rate_type->save();
 

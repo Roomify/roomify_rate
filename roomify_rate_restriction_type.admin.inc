@@ -34,7 +34,7 @@ function roomify_rate_restriction_type_form($form, &$form_state, $rate_restricti
   }
 
   $form['label'] = array(
-    '#title' => t('rate type name'),
+    '#title' => t('Label'),
     '#type' => 'textfield',
     '#default_value' => $rate_restriction_type->label,
     '#description' => t('The human-readable name of this rate restriction type.'),
