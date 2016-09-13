@@ -335,7 +335,7 @@ class RoomifyRate extends Entity {
       );
       $field_view_value = field_view_value('roomify_rate', $this, $field, $price);
     }
-    elseif ($field_info['type'] == 'number_integer') {
+    elseif ($field_info['type'] == 'number_integer' || $field_info['type'] == 'number_decimal') {
       $field_view_value = field_view_value('roomify_rate', $this, $field, array('value' => $value));
     }
     else {
