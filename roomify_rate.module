@@ -643,37 +643,59 @@ function roomify_rate_entity_insert($entity, $type) {
 }
 
 /**
+ * Return all rates based on type_id and number of nights.
+ *
+ * @param $rate_bundles
  * @param $type_id
  * @param $nights
  *
- * @return RoomifyRate|false
+ * @return array
  */
-function roomify_rate_get_rate($type_id, $nights) {
+function roomify_rate_get_rates($rate_bundles = NULL, $type_id = NULL, $nights = 0) {
   $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', 'roomify_rate')
-        ->fieldCondition('rate_bat_type_reference', 'target_id', $type_id);
+  $query->entityCondition('entity_type', 'roomify_rate');
+
+  if ($rate_bundles !== NULL) {
+    if (is_array($rate_bundles)) {
+      $query->propertyCondition('type', $rate_bundles, 'IN');
+    }
+    else {
+      $query->propertyCondition('type', $rate_bundles);
+    }
+  }
+  if ($type_id !== NULL) {
+    $query->fieldCondition('rate_bat_type_reference', 'target_id', $type_id);
+  }
 
   $result = $query->execute();
 
-  $min_stay = 1;
-  $max_stay = PHP_INT_MAX;
-  $current_rate = FALSE;
+  $rates = array();
   if (isset($result['roomify_rate'])) {
     foreach ($result['roomify_rate'] as $rate) {
       $rate = roomify_rate_load($rate->rate_id);
 
-      $min = (isset($rate->rate_minimum_stay[LANGUAGE_NONE][0]['value'])) ? $rate->rate_minimum_stay[LANGUAGE_NONE][0]['value'] : 1;
-      $max = (isset($rate->rate_maximum_stay[LANGUAGE_NONE][0]['value'])) ? $rate->rate_maximum_stay[LANGUAGE_NONE][0]['value'] : PHP_INT_MAX;
+      $valid = TRUE;
+      if (isset($rate->rate_restrictions[LANGUAGE_NONE]) && $nights > 0) {
+        foreach ($rate->rate_restrictions[LANGUAGE_NONE] as $rate_restriction) {
+          $rate_restriction = roomify_rate_restriction_load($rate_restriction['target_id']);
 
-      if ($nights >= $min && $nights <= $max && $min >= $min_stay) {
-        $current_rate = $rate;
-        $min_stay = $min;
-        $max_stay = $max;
+          $min = (isset($rate_restriction->rate_minimum_stay[LANGUAGE_NONE][0]['value'])) ? $rate_restriction->rate_minimum_stay[LANGUAGE_NONE][0]['value'] : 1;
+          $max = (isset($rate_restriction->rate_maximum_stay[LANGUAGE_NONE][0]['value'])) ? $rate_restriction->rate_maximum_stay[LANGUAGE_NONE][0]['value'] : PHP_INT_MAX;
+
+          if (!($nights >= $min && $nights <= $max)) {
+            $valid = FALSE;
+            break;
+          }
+        }
+      }
+
+      if ($valid) {
+        $rates[] = $rate;
       }
     }
   }
 
-  return $current_rate;
+  return $rates;
 }
 
 /**
@@ -944,6 +966,12 @@ if (module_exists('inline_entity_form')) {
 
       $fields = array();
 
+      $fields['label'] = array(
+        'type' => 'property',
+        'label' => t('Label'),
+        'weight' => 1,
+      );
+
       if (count($bundles) > 1) {
         $bundle_key = $info['entity keys']['bundle'];
         $fields[$bundle_key] = array(
@@ -966,6 +994,15 @@ if (module_exists('inline_entity_form')) {
       if (!isset($type->status)) {
         $type->status = 0;
       }
+
+      $form['label'] = array(
+        '#title' => t('Label'),
+        '#type' => 'textfield',
+        '#default_value' => (!empty($type->label)) ? $type->label : '',
+        '#required' => TRUE,
+        '#size' => 30,
+        '#weight' => -100,
+      );
 
       if (!empty($info['fieldable'])) {
         $langcode = entity_language($this->entityType, $entity);

@@ -268,3 +268,56 @@ function roomify_rate_create_standard_rate_restriction_type() {
 
   $rate_restriction_type->save();
 }
+
+/**
+ * Remove default value from fields 'Rate Valid From' and 'Rate Valid To'
+ */
+function roomify_rate_update_7001() {
+  $bundles = roomify_rate_get_restriction_types();
+
+  foreach ($bundles as $bundle) {
+    $type_bundle = $bundle->type;
+
+    if (field_read_instance('roomify_rate_restriction', 'rate_valid_from', $type_bundle)) {
+      $instance = array(
+        'field_name' => 'rate_valid_from',
+        'entity_type' => 'roomify_rate_restriction',
+        'label' => 'Rate Valid From',
+        'bundle' => $type_bundle,
+        'required' => FALSE,
+        'widget' => array(
+          'type' => 'date_popup',
+        ),
+        'settings' => array(
+          'default_value' => 'blank',
+          'default_value2' => 'same',
+          'default_value_code' => '',
+          'default_value_code2' => '',
+          'user_register_form' => FALSE,
+        ),
+      );
+      field_update_instance($instance);
+    }
+
+    if (field_read_instance('roomify_rate_restriction', 'rate_valid_to', $type_bundle)) {
+      $instance = array(
+        'field_name' => 'rate_valid_to',
+        'entity_type' => 'roomify_rate_restriction',
+        'label' => 'Rate Valid To',
+        'bundle' => $type_bundle,
+        'required' => FALSE,
+        'widget' => array(
+          'type' => 'date_popup',
+        ),
+        'settings' => array(
+          'default_value' => 'blank',
+          'default_value2' => 'same',
+          'default_value_code' => '',
+          'default_value_code2' => '',
+          'user_register_form' => FALSE,
+        ),
+      );
+      field_update_instance($instance);
+    }
+  }
+}

@@ -340,7 +340,7 @@ function roomify_rate_add_add_valid_from_field($type_bundle) {
         'type' => 'date_popup',
       ),
       'settings' => array(
-        'default_value' => 'now',
+        'default_value' => 'blank',
         'default_value2' => 'same',
         'default_value_code' => '',
         'default_value_code2' => '',
@@ -398,7 +398,7 @@ function roomify_rate_add_add_valid_to_field($type_bundle) {
         'type' => 'date_popup',
       ),
       'settings' => array(
-        'default_value' => 'now',
+        'default_value' => 'blank',
         'default_value2' => 'same',
         'default_value_code' => '',
         'default_value_code2' => '',
