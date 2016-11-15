@@ -453,3 +453,85 @@ function roomify_rate_add_rate_restriction_reference_field($type_bundle) {
     field_create_instance($instance);
   }
 }
+
+/**
+ * Add minimum people field.
+ */
+function roomify_rate_add_minimum_people_field($type_bundle) {
+  field_info_cache_clear();
+
+  // "rate_minimum_people" field.
+  if (field_read_field('rate_minimum_people') === FALSE) {
+    $field = array(
+      'field_name' => 'rate_minimum_people',
+      'type' => 'number_integer',
+      'cardinality' => 1,
+      'locked' => 1,
+    );
+    field_create_field($field);
+  }
+
+  field_cache_clear();
+
+  // "rate_minimum_people" field instance.
+  if (field_read_instance('roomify_rate_restriction', 'rate_minimum_people', $type_bundle) === FALSE) {
+    $instance = array(
+      'field_name' => 'rate_minimum_people',
+      'entity_type' => 'roomify_rate_restriction',
+      'label' => 'Minimum People',
+      'bundle' => $type_bundle,
+      'required' => FALSE,
+      'widget' => array(
+        'active' => 0,
+        'module' => 'number',
+        'settings' => array(),
+        'type' => 'number',
+      ),
+      'settings' => array(
+        'min' => 1,
+      ),
+    );
+    field_create_instance($instance);
+  }
+}
+
+/**
+ * Add maximum people field.
+ */
+function roomify_rate_add_maximum_people_field($type_bundle) {
+  field_info_cache_clear();
+
+  // "rate_maximum_people" field.
+  if (field_read_field('rate_maximum_people') === FALSE) {
+    $field = array(
+      'field_name' => 'rate_maximum_people',
+      'type' => 'number_integer',
+      'cardinality' => 1,
+      'locked' => 1,
+    );
+    field_create_field($field);
+  }
+
+  field_cache_clear();
+
+  // "rate_maximum_people" field instance.
+  if (field_read_instance('roomify_rate_restriction', 'rate_maximum_people', $type_bundle) === FALSE) {
+    $instance = array(
+      'field_name' => 'rate_maximum_people',
+      'entity_type' => 'roomify_rate_restriction',
+      'label' => 'Maximum People',
+      'bundle' => $type_bundle,
+      'required' => FALSE,
+      'widget' => array(
+        'active' => 0,
+        'module' => 'number',
+        'settings' => array(),
+        'type' => 'number',
+      ),
+      'settings' => array(
+        'min' => 1,
+      ),
+    );
+    field_create_instance($instance);
+  }
+}

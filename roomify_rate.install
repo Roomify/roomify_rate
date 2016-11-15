@@ -321,3 +321,19 @@ function roomify_rate_update_7001() {
     }
   }
 }
+
+/**
+ * Add 'Minimum People' and 'Maximum People' fields.
+ */
+function roomify_rate_update_7002() {
+  module_load_include('inc', 'roomify_rate', 'roomify_rate.fields');
+
+  $bundles = roomify_rate_get_restriction_types();
+
+  foreach ($bundles as $bundle) {
+    $type_bundle = $bundle->type;
+
+    roomify_rate_add_minimum_people_field($type_bundle);
+    roomify_rate_add_maximum_people_field($type_bundle);
+  }
+}
