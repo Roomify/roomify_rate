@@ -9,6 +9,7 @@
  * UI controller.
  */
 class RoomifyRateTypeUIController extends EntityDefaultUIController {
+
   /**
    * Overrides hook_menu() defaults.
    */
@@ -22,6 +23,7 @@ class RoomifyRateTypeUIController extends EntityDefaultUIController {
 
     return $items;
   }
+
 }
 
 /**

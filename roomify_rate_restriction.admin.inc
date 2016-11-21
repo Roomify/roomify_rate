@@ -9,6 +9,7 @@
  * UI controller.
  */
 class RoomifyRateRestrictionUIController extends EntityDefaultUIController {
+
   /**
    * Overrides hook_menu() defaults.
    */
@@ -66,6 +67,7 @@ class RoomifyRateRestrictionUIController extends EntityDefaultUIController {
       '#content' => $items,
     );
   }
+
 }
 
 /**
@@ -118,7 +120,7 @@ function roomify_rate_restriction_edit_form($form, &$form_state, $rate) {
 
   // Add the field related form elements.
   $form_state['roomify_rate_restriction'] = $rate;
-  field_attach_form('roomify_rate_restriction', $rate, $form, $form_state, isset($rate->language)? $rate->language : NULL);
+  field_attach_form('roomify_rate_restriction', $rate, $form, $form_state, isset($rate->language) ? $rate->language : NULL);
   $form['additional_settings'] = array(
     '#type' => 'vertical_tabs',
     '#weight' => 99,

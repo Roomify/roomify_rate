@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * @file
+ */
+
+/**
  * Add Default Rate Price field.
  */
 function roomify_rate_add_default_rate_field($type_bundle) {
