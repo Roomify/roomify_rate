@@ -270,7 +270,7 @@ function roomify_rate_create_standard_rate_restriction_type() {
 }
 
 /**
- * Remove default value from fields 'Rate Valid From' and 'Rate Valid To'
+ * Remove default value from fields 'Rate Valid From' and 'Rate Valid To'.
  */
 function roomify_rate_update_7001() {
   $bundles = roomify_rate_get_restriction_types();

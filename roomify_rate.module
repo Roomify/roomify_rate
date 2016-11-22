@@ -41,8 +41,8 @@ function roomify_rate_entity_info() {
       'plural' => t('rates'),
     ),
     'module' => 'roomify_rate',
-    // The information below is used by the RoomifyRateUIController (which extends
-    // the EntityDefaultUIController).
+    // The information below is used by the RoomifyRateUIController
+    // (which extends the EntityDefaultUIController).
     'admin ui' => array(
       'path' => 'admin/bat/config/rate',
       'file' => 'roomify_rate.admin.inc',
@@ -169,7 +169,7 @@ function roomify_rate_entity_info() {
 }
 
 /**
- * Implements hook_bat_event_target_entity_types()
+ * Implements hook_bat_event_target_entity_types().
  *
  * Register Roomify Rate as a BAT event target entity type.
  */
@@ -253,7 +253,7 @@ function roomify_rate_views_api() {
  * @param object $account
  *   The user to check for. Leave it to NULL to check for the global user.
  *
- * @return boolean
+ * @return bool
  *   Whether access is allowed or not.
  */
 function roomify_rate_access($op, $rate = NULL, $account = NULL) {
@@ -282,10 +282,13 @@ function roomify_rate_add_access() {
 }
 
 /**
- * The class used for rate entities
+ * The class used for rate entities.
  */
 class RoomifyRate extends Entity {
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct($values = array()) {
     parent::__construct($values, 'roomify_rate');
   }
@@ -348,7 +351,7 @@ class RoomifyRate extends Entity {
 }
 
 /**
- * The class used for rate type entities
+ * The class used for rate type entities.
  */
 class RoomifyRateType extends Entity {
 
@@ -373,14 +376,20 @@ class RoomifyRateType extends Entity {
 }
 
 /**
- * The Controller for RoomifyRate entities
+ * The Controller for RoomifyRate entities.
  */
 class RoomifyRateController extends EntityAPIController {
 
+  /**
+   *
+   */
   public function __construct($entityType) {
     parent::__construct($entityType);
   }
 
+  /**
+   *
+   */
   public function create(array $values = array()) {
     $values += array(
       'rate_id' => '',
@@ -395,11 +404,14 @@ class RoomifyRateController extends EntityAPIController {
     return $rate;
   }
 
+  /**
+   *
+   */
   public function getReferencedIds($unit_type, $ids = array()) {
     $query = new EntityFieldQuery();
 
     $query->entityCondition('entity_type', 'roomify_rate')
-          ->fieldCondition('rate_bat_type_reference', 'target_id', $unit_type);
+      ->fieldCondition('rate_bat_type_reference', 'target_id', $unit_type);
     if (!empty($ids)) {
       $query->propertyCondition('rate_id', $ids, 'IN');
     }
@@ -442,6 +454,9 @@ class RoomifyRateController extends EntityAPIController {
     return array();
   }
 
+  /**
+   *
+   */
   protected function applyConditions($entities, $conditions = array()) {
     if ($conditions) {
       foreach ($entities as $key => $entity) {
@@ -716,7 +731,7 @@ function roomify_rate_get_rates($rate_bundles = NULL, $type_id = NULL, $nights =
 }
 
 /**
- * The class used for rate entities
+ * The class used for rate entities.
  */
 class RoomifyRateRestriction extends Entity {
 
@@ -734,7 +749,7 @@ class RoomifyRateRestriction extends Entity {
 }
 
 /**
- * The class used for rate type entities
+ * The class used for rate type entities.
  */
 class RoomifyRateRestrictionType extends Entity {
 
@@ -763,10 +778,16 @@ class RoomifyRateRestrictionType extends Entity {
  */
 class RoomifyRateRestrictionController extends EntityAPIController {
 
+  /**
+   *
+   */
   public function __construct($entityType) {
     parent::__construct($entityType);
   }
 
+  /**
+   *
+   */
   public function create(array $values = array()) {
     $values += array(
       'rate_restriction_id' => '',
@@ -793,14 +814,20 @@ class RoomifyRateRestrictionController extends EntityAPIController {
 }
 
 /**
- * The Controller for RoomifyRateRestrictionType entities
+ * The Controller for RoomifyRateRestrictionType entities.
  */
 class RoomifyRateRestrictionTypeController extends EntityAPIControllerExportable {
 
+  /**
+   *
+   */
   public function __construct($entityType) {
     parent::__construct($entityType);
   }
 
+  /**
+   *
+   */
   public function create(array $values = array()) {
     $values += array(
       'id' => '',
@@ -855,6 +882,9 @@ function roomify_rate_restriction_add_access() {
   return FALSE;
 }
 
+/**
+ *
+ */
 function roomify_rate_restriction_type_access() {
   return TRUE;
 }
@@ -1054,7 +1084,9 @@ if (module_exists('inline_entity_form')) {
           'js' => array(
             array(
               'type' => 'setting',
-              'data' => array('anonymous' => variable_get('anonymous', t('Anonymous'))),
+              'data' => array(
+                'anonymous' => variable_get('anonymous', t('Anonymous')),
+              ),
             ),
           ),
         ),
