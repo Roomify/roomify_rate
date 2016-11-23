@@ -6,14 +6,23 @@
  * as fields.
  */
 
+/**
+ *
+ */
 class roomify_rate_handler_edit_link_field extends views_handler_field {
 
+  /**
+   * {@inheritdoc}
+   */
   public function construct() {
     parent::construct();
 
     $this->additional_fields['rate_id'] = 'rate_id';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function option_definition() {
     $options = parent::option_definition();
 
@@ -23,6 +32,9 @@ class roomify_rate_handler_edit_link_field extends views_handler_field {
     return $options;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
 
@@ -40,11 +52,17 @@ class roomify_rate_handler_edit_link_field extends views_handler_field {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function query() {
     $this->ensure_my_table();
     $this->add_additional_fields();
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function render($values) {
     $text = !empty($this->options['text']) ? $this->options['text'] : t('edit');
     $rate_id = $values->{$this->aliases['rate_id']};

@@ -481,14 +481,20 @@ class RoomifyRateController extends EntityAPIController {
 }
 
 /**
- * The Controller for RoomifyRateType entities
+ * The Controller for RoomifyRateType entities.
  */
 class RoomifyRateTypeController extends EntityAPIControllerExportable {
 
+  /**
+   *
+   */
   public function __construct($entityType) {
     parent::__construct($entityType);
   }
 
+  /**
+   *
+   */
   public function create(array $values = array()) {
     $values += array(
       'id' => '',
@@ -503,6 +509,9 @@ class RoomifyRateTypeController extends EntityAPIControllerExportable {
 
 }
 
+/**
+ *
+ */
 function roomify_rate_type_access() {
   return TRUE;
 }
@@ -735,6 +744,9 @@ function roomify_rate_get_rates($rate_bundles = NULL, $type_id = NULL, $nights =
  */
 class RoomifyRateRestriction extends Entity {
 
+  /**
+   *
+   */
   public function __construct($values = array()) {
     parent::__construct($values, 'roomify_rate_restriction');
   }
@@ -767,6 +779,9 @@ class RoomifyRateRestrictionType extends Entity {
    */
   public $label;
 
+  /**
+   *
+   */
   public function __construct($values = array()) {
     parent::__construct($values, 'roomify_rate_restriction_type');
   }
@@ -854,7 +869,7 @@ class RoomifyRateRestrictionTypeController extends EntityAPIControllerExportable
  * @param object $account
  *   The user to check for. Leave it to NULL to check for the global user.
  *
- * @return boolean
+ * @return bool
  *   Whether access is allowed or not.
  */
 function roomify_rate_restriction_access($op, $rate = NULL, $account = NULL) {
@@ -1002,6 +1017,9 @@ function roomify_rate_restriction_delete(RoomifyRateRestriction $rate_restrictio
  * The Inline Entity Form Controller for RoomifyRateRestrictionType entities.
  */
 if (module_exists('inline_entity_form')) {
+  /**
+   *
+   */
   class RoomifyRateRestrictionInlineEntityFormController extends EntityInlineEntityFormController {
 
     /**
