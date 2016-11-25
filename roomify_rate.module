@@ -703,29 +703,25 @@ function roomify_rate_get_rates($rate_bundles = NULL, $type_id = NULL, $nights =
 
       $valid = TRUE;
       if (isset($rate->rate_restrictions[LANGUAGE_NONE])) {
-        if ($nights > 0 || $people > 0) {
-          foreach ($rate->rate_restrictions[LANGUAGE_NONE] as $rate_restriction) {
-            $rate_restriction = roomify_rate_restriction_load($rate_restriction['target_id']);
+        foreach ($rate->rate_restrictions[LANGUAGE_NONE] as $rate_restriction) {
+          $rate_restriction = roomify_rate_restriction_load($rate_restriction['target_id']);
 
-            if ($nights > 0) {
-              $minimum_stay = (isset($rate_restriction->rate_minimum_stay[LANGUAGE_NONE][0]['value'])) ? $rate_restriction->rate_minimum_stay[LANGUAGE_NONE][0]['value'] : 1;
-              $maximum_stay = (isset($rate_restriction->rate_maximum_stay[LANGUAGE_NONE][0]['value'])) ? $rate_restriction->rate_maximum_stay[LANGUAGE_NONE][0]['value'] : PHP_INT_MAX;
+          if ($nights > 0) {
+            $minimum_stay = (isset($rate_restriction->rate_minimum_stay[LANGUAGE_NONE][0]['value'])) ? $rate_restriction->rate_minimum_stay[LANGUAGE_NONE][0]['value'] : 1;
+            $maximum_stay = (isset($rate_restriction->rate_maximum_stay[LANGUAGE_NONE][0]['value'])) ? $rate_restriction->rate_maximum_stay[LANGUAGE_NONE][0]['value'] : PHP_INT_MAX;
 
-              if (!($nights >= $minimum_stay && $nights <= $maximum_stay)) {
-                $valid = FALSE;
-                break;
-              }
+            if (!($nights >= $minimum_stay && $nights <= $maximum_stay)) {
+              $valid = FALSE;
+              break;
             }
+          }
 
-            if ($people > 0) {
-              $minimum_people = (isset($rate_restriction->rate_minimum_people[LANGUAGE_NONE][0]['value'])) ? $rate_restriction->rate_minimum_people[LANGUAGE_NONE][0]['value'] : 1;
-              $maximum_people = (isset($rate_restriction->rate_maximum_people[LANGUAGE_NONE][0]['value'])) ? $rate_restriction->rate_maximum_people[LANGUAGE_NONE][0]['value'] : PHP_INT_MAX;
+          $minimum_people = (isset($rate_restriction->rate_minimum_people[LANGUAGE_NONE][0]['value'])) ? $rate_restriction->rate_minimum_people[LANGUAGE_NONE][0]['value'] : 0;
+          $maximum_people = (isset($rate_restriction->rate_maximum_people[LANGUAGE_NONE][0]['value'])) ? $rate_restriction->rate_maximum_people[LANGUAGE_NONE][0]['value'] : PHP_INT_MAX;
 
-              if (!($people >= $minimum_people && $people <= $maximum_people)) {
-                $valid = FALSE;
-                break;
-              }
-            }
+          if (!($people >= $minimum_people && $people <= $maximum_people)) {
+            $valid = FALSE;
+            break;
           }
         }
       }
