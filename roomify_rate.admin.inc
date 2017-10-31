@@ -165,7 +165,7 @@ function roomify_rate_form($form, &$form_state, $rate, $op = 'edit') {
   global $user;
   // Add the breadcrumb for the form's location.
   roomify_rate_set_breadcrumb();
-  drupal_set_title(t('Edit @rate_name', array('@rate_name' => $rate->name)));
+  drupal_set_title(t('Edit !rate_name', array('!rate_name' => $rate->name)));
 
   $rate->date = format_date($rate->created, 'custom', 'Y-m-d H:i:s O');
   $account = user_load($rate->uid);
