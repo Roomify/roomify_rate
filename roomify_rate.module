@@ -885,7 +885,7 @@ function roomify_rate_restriction_add_access() {
 
   $bundles = roomify_rate_get_restriction_types();
   foreach ($bundles as $bundle) {
-    if (roomify_rate_access('create', roomify_rate_restriction_create(array('type' => $bundle->type, 'uid' => 0)))) {
+    if (roomify_rate_restriction_access('create', roomify_rate_restriction_create(array('type' => $bundle->type, 'uid' => 0)))) {
       return TRUE;
     }
   }
