@@ -296,6 +296,15 @@ function roomify_rate_edit_form_submit(&$form, &$form_state) {
   $rate->created = !empty($rate->date) ? strtotime($rate->date) : REQUEST_TIME;
   $rate->changed = time();
 
+  if (isset($rate->author_name)) {
+    if ($account = user_load_by_name($rate->author_name)) {
+      $rate->uid = $account->uid;
+    }
+    else {
+      $rate->uid = 0;
+    }
+  }
+
   $rate->save();
   drupal_set_message(t('Rate @name saved', array('@name' => $rate->name)));
 
